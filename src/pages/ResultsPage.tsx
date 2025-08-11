@@ -1,5 +1,8 @@
 import { DashboardCard } from "@/components/DashboardCard";
 import { ToolCard } from "@/components/ToolCard";
+import { FormattedText } from "@/components/FormattedText";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
   Building2, 
   Clock, 
@@ -12,13 +15,48 @@ import {
   Globe
 } from "lucide-react";
 
-const Index = () => {
+interface FormData {
+  topic: string;
+  businessFundamentals: string;
+  currentSolutionLandscape: string;
+  aiFundamentals: string;
+  aiSolutionAndTools: string;
+  aiToolsAppendix: Array<{
+    name: string;
+    description: string;
+    logoUrl?: string;
+    comparisonPoints: string;
+  }>;
+}
+
+const ResultsPage = () => {
+  const [formData, setFormData] = useState<FormData | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("formData");
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    } else {
+      // Redirect to form if no data found
+      navigate("/");
+    }
+  }, [navigate]);
+
+  if (!formData) {
+    return (
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-background p-6">
       {/* Main Title */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-primary mb-2">
-          The Topic
+          {formData.topic}
         </h1>
       </div>
 
@@ -30,6 +68,7 @@ const Index = () => {
             title="Business Fundamentals"
             icon={<Building2 className="h-6 w-6" />}
             variant="primary"
+            content={<FormattedText text={formData.businessFundamentals} />}
           />
 
           {/* Current Solution Landscape */}
@@ -37,6 +76,7 @@ const Index = () => {
             title="Current Solution Landscape"
             icon={<Clock className="h-6 w-6" />}
             variant="secondary"
+            content={<FormattedText text={formData.currentSolutionLandscape} />}
           />
 
           {/* AI Fundamentals */}
@@ -44,6 +84,7 @@ const Index = () => {
             title="AI Fundamentals"
             icon={<Brain className="h-6 w-6" />}
             variant="accent"
+            content={<FormattedText text={formData.aiFundamentals} />}
           />
 
           {/* AI Solution and Tools */}
@@ -51,6 +92,7 @@ const Index = () => {
             title="AI Solution and Tools"
             icon={<Zap className="h-6 w-6" />}
             variant="primary"
+            content={<FormattedText text={formData.aiSolutionAndTools} />}
           />
         </div>
 
@@ -61,26 +103,16 @@ const Index = () => {
               AI Tools Appendix (Comparison Table)
             </h2>
             <div className="space-y-3">
-              <ToolCard 
-                title="n8n" 
-                icon={<Workflow className="h-4 w-4" />}
-              />
-              <ToolCard 
-                title="Zapier AI Agents" 
-                icon={<Zap className="h-4 w-4" />}
-              />
-              <ToolCard 
-                title="Power BI" 
-                icon={<BarChart3 className="h-4 w-4" />}
-              />
-              <ToolCard 
-                title="Python (pandas, NumPy)" 
-                icon={<Code className="h-4 w-4" />}
-              />
-              <ToolCard 
-                title="Google Vertex AI" 
-                icon={<Globe className="h-4 w-4" />}
-              />
+              {formData.aiToolsAppendix.map((tool, index) => (
+                <ToolCard 
+                  key={index}
+                  title={tool.name} 
+                  description={tool.description}
+                  comparisonPoints={tool.comparisonPoints}
+                  logoUrl={tool.logoUrl}
+                  icon={<Code className="h-4 w-4" />}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -89,4 +121,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default ResultsPage;

@@ -6,13 +6,15 @@ interface DashboardCardProps {
   icon?: ReactNode;
   variant?: "primary" | "secondary" | "accent" | "warning";
   className?: string;
+  content?: ReactNode;
 }
 
 export const DashboardCard = ({ 
   title, 
   icon, 
   variant = "primary",
-  className = "" 
+  className = "",
+  content
 }: DashboardCardProps) => {
   const getVariantStyles = () => {
     switch (variant) {
@@ -39,8 +41,8 @@ export const DashboardCard = ({
         )}
         <h2 className="text-xl font-bold text-white">{title}</h2>
       </div>
-      <div className="min-h-[200px] bg-white/5 rounded-lg border border-white/10 backdrop-blur-sm">
-        {/* Empty content area */}
+      <div className="min-h-[200px] bg-white/5 rounded-lg border border-white/10 backdrop-blur-sm p-4">
+        {content || <div className="text-white/50 text-sm">No content provided</div>}
       </div>
     </Card>
   );
