@@ -30,7 +30,7 @@ export const DashboardCard = ({
   };
 
   return (
-    <Card className={`p-6 border-2 transition-all duration-300 hover:scale-105 ${getVariantStyles()} ${className}`}>
+    <Card className={`p-6 border-2 transition-all duration-300 ${getVariantStyles()} ${className}`}>
       <div className="flex items-center gap-3 mb-4">
         {icon && (
           <div className="p-2 bg-background/10 rounded-lg backdrop-blur-sm">
