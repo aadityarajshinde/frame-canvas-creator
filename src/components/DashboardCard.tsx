@@ -17,13 +17,13 @@ export const DashboardCard = ({
   const getVariantStyles = () => {
     switch (variant) {
       case "primary":
-        return "bg-gradient-primary border-primary/20 shadow-glow";
+        return "bg-gradient-primary border-primary/30 shadow-glow";
       case "secondary":
-        return "bg-gradient-secondary border-secondary/20 shadow-accent";
+        return "bg-gradient-secondary border-primary/20";
       case "accent":
-        return "bg-gradient-accent border-success/20";
+        return "bg-gradient-accent border-accent/30 shadow-accent";
       case "warning":
-        return "bg-warning border-warning/20 text-warning-foreground";
+        return "bg-card border-accent/20 text-card-foreground";
       default:
         return "bg-card border-border";
     }
