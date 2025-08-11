@@ -56,8 +56,8 @@ const Index = () => {
 
         {/* Tools Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-card/50 rounded-xl p-4 border border-primary/20">
-            <h2 className="text-lg font-bold text-primary mb-4">
+          <div className="bg-white/8 rounded-xl p-4 border border-white/15 backdrop-blur-xl shadow-lg">
+            <h2 className="text-lg font-bold text-white mb-4">
               AI Tools Appendix (Comparison Table)
             </h2>
             <div className="space-y-3">
