@@ -8,52 +8,52 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 220 25% 8%;
-    --foreground: 0 0% 98%;
+    --background: 220 15% 12%;
+    --foreground: 0 0% 95%;
 
-    --card: 220 20% 12%;
-    --card-foreground: 0 0% 95%;
+    --card: 220 12% 16%;
+    --card-foreground: 0 0% 92%;
 
-    --popover: 220 20% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 220 12% 16%;
+    --popover-foreground: 0 0% 92%;
 
-    --primary: 210 100% 56%;
-    --primary-foreground: 220 25% 8%;
+    --primary: 210 40% 45%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 270 100% 65%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 220 15% 25%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 220 15% 18%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 330 100% 70%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 200 35% 40%;
+    --accent-foreground: 0 0% 95%;
 
-    --success: 150 100% 45%;
-    --success-foreground: 0 0% 98%;
+    --success: 150 25% 35%;
+    --success-foreground: 0 0% 95%;
 
-    --warning: 45 100% 55%;
-    --warning-foreground: 220 25% 8%;
+    --warning: 35 40% 50%;
+    --warning-foreground: 220 15% 12%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 50% 45%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 210 100% 56%;
+    --border: 220 10% 25%;
+    --input: 220 10% 25%;
+    --ring: 210 40% 45%;
 
     --radius: 0.75rem;
 
-    /* Vibrant gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(210 100% 56%), hsl(270 100% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(330 100% 70%), hsl(45 100% 55%));
-    --gradient-accent: linear-gradient(135deg, hsl(150 100% 45%), hsl(180 100% 50%));
-    --gradient-background: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 20% 12%));
+    /* Subtle professional gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(220 12% 16%), hsl(210 40% 45% / 0.1));
+    --gradient-secondary: linear-gradient(135deg, hsl(220 15% 25%), hsl(200 35% 40% / 0.1));
+    --gradient-accent: linear-gradient(135deg, hsl(200 35% 40%), hsl(150 25% 35% / 0.1));
+    --gradient-background: linear-gradient(135deg, hsl(220 15% 12%), hsl(220 12% 16%));
 
-    /* Shadows with glow */
-    --shadow-glow: 0 0 30px hsl(210 100% 56% / 0.3);
-    --shadow-accent: 0 0 20px hsl(330 100% 70% / 0.2);
-    --shadow-card: 0 8px 32px hsl(220 25% 8% / 0.5);
+    /* Subtle shadows */
+    --shadow-glow: 0 0 20px hsl(210 40% 45% / 0.1);
+    --shadow-accent: 0 0 15px hsl(200 35% 40% / 0.1);
+    --shadow-card: 0 4px 20px hsl(220 15% 8% / 0.3);
 
     --sidebar-background: 0 0% 98%;
 
