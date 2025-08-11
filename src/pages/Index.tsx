@@ -17,7 +17,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-background p-6">
       {/* Main Title */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl font-bold text-primary mb-2">
           The Topic
         </h1>
       </div>
