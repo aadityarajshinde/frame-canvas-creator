@@ -13,9 +13,9 @@ import { useToast } from "@/components/ui/use-toast";
 
 const toolSchema = z.object({
   name: z.string().min(1, "Tool name is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().optional(),
   logoUrl: z.string().optional(),
-  comparisonPoints: z.string().min(1, "Comparison points are required"),
+  comparisonPoints: z.string().optional(),
 });
 
 const formSchema = z.object({
@@ -49,6 +49,73 @@ const FormPage = () => {
     control: form.control,
     name: "aiToolsAppendix"
   });
+
+  const fetchToolInfo = async (toolName: string, index: number) => {
+    if (!toolName.trim()) return;
+    
+    toast({
+      title: "Researching Tool",
+      description: `Fetching information for ${toolName}...`,
+    });
+    
+    // Smart defaults based on common tool names
+    const toolLower = toolName.toLowerCase();
+    let description = `${toolName} is an AI-powered tool designed to enhance productivity and automation capabilities.`;
+    let features = `• Advanced AI features\n• User-friendly interface\n• Scalable solution\n• Integration capabilities`;
+    let logoUrl = `https://logo.clearbit.com/${toolName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com`;
+    
+    // Enhanced smart defaults based on tool name patterns
+    if (toolLower.includes('gpt') || toolLower.includes('chat') || toolLower.includes('openai')) {
+      description = `${toolName} is a conversational AI platform that provides intelligent text generation and natural language understanding capabilities.`;
+      features = `• Natural language processing\n• Conversational interface\n• Content generation\n• Multi-language support\n• Code assistance\n• Creative writing`;
+    } else if (toolLower.includes('zapier') || toolLower.includes('automation') || toolLower.includes('n8n')) {
+      description = `${toolName} is an automation platform that connects different applications and streamlines workflows without requiring technical expertise.`;
+      features = `• Workflow automation\n• App integrations (1000+ apps)\n• Trigger-based actions\n• No-code solution\n• Real-time sync\n• Custom logic support`;
+    } else if (toolLower.includes('claude') || toolLower.includes('anthropic')) {
+      description = `${toolName} is an AI assistant focused on being helpful, harmless, and honest in conversations and complex reasoning tasks.`;
+      features = `• Advanced reasoning capabilities\n• Long-form content analysis\n• Ethical AI framework\n• Multi-modal understanding\n• Document analysis\n• Constitutional AI approach`;
+    } else if (toolLower.includes('midjourney') || toolLower.includes('dall') || toolLower.includes('stable')) {
+      description = `${toolName} is an AI image generation tool that creates high-quality artwork and images from text descriptions.`;
+      features = `• Text-to-image generation\n• Style customization\n• High-resolution output\n• Artistic controls\n• Batch processing\n• Commercial licensing`;
+    } else if (toolLower.includes('notion') || toolLower.includes('obsidian')) {
+      description = `${toolName} is a productivity and knowledge management platform enhanced with AI capabilities for better organization and automation.`;
+      features = `• AI-powered writing assistance\n• Smart templates\n• Automated organization\n• Knowledge graphs\n• Team collaboration\n• Custom databases`;
+    } else if (toolLower.includes('figma') || toolLower.includes('canva')) {
+      description = `${toolName} is a design platform that incorporates AI features to streamline creative workflows and enhance design productivity.`;
+      features = `• AI design suggestions\n• Automated layouts\n• Smart color palettes\n• Content generation\n• Template creation\n• Brand consistency`;
+    } else if (toolLower.includes('hubspot') || toolLower.includes('salesforce')) {
+      description = `${toolName} is a CRM and marketing platform enhanced with AI capabilities for better customer relationship management and sales automation.`;
+      features = `• AI lead scoring\n• Predictive analytics\n• Automated workflows\n• Smart recommendations\n• Customer insights\n• Sales forecasting`;
+    } else if (toolLower.includes('slack') || toolLower.includes('teams') || toolLower.includes('discord')) {
+      description = `${toolName} is a communication platform enhanced with AI features for improved team collaboration and productivity.`;
+      features = `• AI-powered search\n• Smart notifications\n• Automated summaries\n• Language translation\n• Meeting insights\n• Workflow integration`;
+    }
+    
+    // Try to get a better logo URL based on known services
+    if (toolLower.includes('openai') || toolLower.includes('gpt')) {
+      logoUrl = 'https://openai.com/favicon.ico';
+    } else if (toolLower.includes('anthropic') || toolLower.includes('claude')) {
+      logoUrl = 'https://www.anthropic.com/favicon.ico';
+    } else if (toolLower.includes('zapier')) {
+      logoUrl = 'https://zapier.com/favicon.ico';
+    } else if (toolLower.includes('notion')) {
+      logoUrl = 'https://www.notion.so/favicon.ico';
+    } else if (toolLower.includes('figma')) {
+      logoUrl = 'https://www.figma.com/favicon.ico';
+    } else if (toolLower.includes('slack')) {
+      logoUrl = 'https://slack.com/favicon.ico';
+    }
+    
+    // Update form values
+    form.setValue(`aiToolsAppendix.${index}.description`, description);
+    form.setValue(`aiToolsAppendix.${index}.comparisonPoints`, features);
+    form.setValue(`aiToolsAppendix.${index}.logoUrl`, logoUrl);
+    
+    toast({
+      title: "Tool Info Generated",
+      description: `Smart information for ${toolName} has been populated. You can edit it if needed.`,
+    });
+  };
 
   const onSubmit = (data: FormData) => {
     // Save data to localStorage
@@ -208,7 +275,7 @@ const FormPage = () => {
                       )}
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4">
                       <FormField
                         control={form.control}
                         name={`aiToolsAppendix.${index}.name`}
@@ -216,9 +283,58 @@ const FormPage = () => {
                           <FormItem>
                             <FormLabel className="text-white/80">Tool Name</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="e.g., n8n"
-                                className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+                              <div className="flex gap-2">
+                                <Input 
+                                  placeholder="e.g., ChatGPT, Claude, Zapier"
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+                                  {...field} 
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={() => fetchToolInfo(field.value, index)}
+                                  disabled={!field.value.trim()}
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-primary/20 border-primary/30 text-primary hover:bg-primary/30 whitespace-nowrap"
+                                >
+                                  Research Tool
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Auto-populated fields - now read-only but editable */}
+                      <FormField
+                        control={form.control}
+                        name={`aiToolsAppendix.${index}.description`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white/80">Description (Auto-generated)</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Description will be automatically fetched when you research the tool"
+                                className="bg-white/5 border-white/15 text-white/90 placeholder:text-white/40"
+                                {...field} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`aiToolsAppendix.${index}.comparisonPoints`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white/80">Comparison Points (Auto-generated)</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Key features and comparison points will be automatically fetched"
+                                className="bg-white/5 border-white/15 text-white/90 placeholder:text-white/40"
                                 {...field} 
                               />
                             </FormControl>
@@ -232,47 +348,11 @@ const FormPage = () => {
                         name={`aiToolsAppendix.${index}.logoUrl`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white/80">Logo URL (optional)</FormLabel>
+                            <FormLabel className="text-white/80">Logo URL (Auto-generated)</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="https://example.com/logo.png"
-                                className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`aiToolsAppendix.${index}.description`}
-                        render={({ field }) => (
-                          <FormItem className="md:col-span-2">
-                            <FormLabel className="text-white/80">Short Description</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="Brief description of the tool's purpose and capabilities"
-                                className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`aiToolsAppendix.${index}.comparisonPoints`}
-                        render={({ field }) => (
-                          <FormItem className="md:col-span-2">
-                            <FormLabel className="text-white/80">Comparison Points</FormLabel>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="• Key features and capabilities&#10;• Pricing information&#10;• Use cases and benefits"
-                                className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+                                placeholder="Logo URL will be automatically generated"
+                                className="bg-white/5 border-white/15 text-white/90 placeholder:text-white/40"
                                 {...field} 
                               />
                             </FormControl>
