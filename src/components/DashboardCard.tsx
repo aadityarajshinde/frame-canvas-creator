@@ -21,9 +21,9 @@ export const DashboardCard = ({
       case "secondary":
         return "bg-gradient-secondary border-primary/20";
       case "accent":
-        return "bg-gradient-accent border-accent/30 shadow-accent";
+        return "bg-gradient-accent border-primary/30 shadow-accent";
       case "warning":
-        return "bg-card border-accent/20 text-card-foreground";
+        return "bg-card border-primary/20 text-card-foreground";
       default:
         return "bg-card border-border";
     }

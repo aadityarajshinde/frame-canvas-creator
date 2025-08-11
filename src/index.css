@@ -17,11 +17,11 @@ All colors MUST be HSL.
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 90%;
 
-    --primary: 210 100% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 133 100% 51%;
+    --primary-foreground: 0 0% 0%;
 
     --secondary: 0 0% 15%;
-    --secondary-foreground: 210 100% 60%;
+    --secondary-foreground: 133 100% 51%;
 
     --muted: 0 0% 12%;
     --muted-foreground: 0 0% 60%;
@@ -32,7 +32,7 @@ All colors MUST be HSL.
     --success: 133 100% 51%;
     --success-foreground: 0 0% 0%;
 
-    --warning: 133 80% 45%;
+    --warning: 133 100% 51%;
     --warning-foreground: 0 0% 0%;
 
     --destructive: 0 70% 50%;
@@ -40,18 +40,18 @@ All colors MUST be HSL.
 
     --border: 0 0% 20%;
     --input: 0 0% 15%;
-    --ring: 210 100% 60%;
+    --ring: 133 100% 51%;
 
     --radius: 0.5rem;
 
-    /* Elegant gradients using the three colors */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%), hsl(210 100% 60% / 0.1));
-    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 12%), hsl(210 100% 60% / 0.05));
-    --gradient-accent: linear-gradient(135deg, hsl(0 0% 8%), hsl(133 100% 51% / 0.1));
+    /* Elegant two-color gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 8%), hsl(133 100% 51% / 0.1));
+    --gradient-secondary: linear-gradient(135deg, hsl(0 0% 12%), hsl(133 100% 51% / 0.05));
+    --gradient-accent: linear-gradient(135deg, hsl(0 0% 8%), hsl(133 100% 51% / 0.15));
     --gradient-background: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 8%));
 
-    /* Refined shadows with brand colors */
-    --shadow-glow: 0 0 25px hsl(210 100% 60% / 0.15);
+    /* Refined shadows with green accents */
+    --shadow-glow: 0 0 25px hsl(133 100% 51% / 0.15);
     --shadow-accent: 0 0 20px hsl(133 100% 51% / 0.1);
     --shadow-card: 0 4px 25px hsl(0 0% 0% / 0.5);
 
