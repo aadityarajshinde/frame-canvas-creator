@@ -18,7 +18,7 @@ const Index = () => {
       {/* Main Title */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
-          Quarterly Financial Forecasting
+          The Topic
         </h1>
       </div>
 
