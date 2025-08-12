@@ -96,29 +96,101 @@ const ResultsPage = () => {
   };
 
   const getToolFeatures = (tool: ToolData) => {
-    if (tool.comparisonPoints) {
-      // Split by bullet points and newlines, clean up, and limit to fit in box
+    // First priority: Use comparisonPoints which contains the actual tool-specific features
+    if (tool.comparisonPoints && tool.comparisonPoints.trim()) {
       const features = tool.comparisonPoints
         .split('\n')
-        .map(point => point.replace(/^•\s*/, '').trim()) // Remove bullet points and clean
-        .filter(point => point && point.length > 3) // Filter out empty or very short strings
-        .slice(0, 4); // Limit to 4 features to fit in box
+        .map(point => point.replace(/^•\s*/, '').trim())
+        .filter(point => point && point.length > 5)
+        .slice(0, 4);
       
-      return features.length > 0 ? features : ["Enhanced AI capabilities", "User-friendly interface", "Scalable solution"];
+      if (features.length > 0) {
+        return features;
+      }
     }
     
-    // Fallback to description if comparisonPoints is not available
-    if (tool.description) {
-      // Extract meaningful phrases from description
-      const key_features = [
-        "AI-powered automation",
-        "Advanced analytics", 
-        "Seamless integration"
+    // Second priority: Extract features from description
+    if (tool.description && tool.description.trim()) {
+      // Look for sentences that describe capabilities
+      const sentences = tool.description
+        .split(/[.!?]/)
+        .map(s => s.trim())
+        .filter(s => s.length > 10 && s.length < 80)
+        .slice(0, 4);
+      
+      if (sentences.length > 0) {
+        return sentences;
+      }
+    }
+    
+    // Fallback: Tool-specific features based on tool name
+    const toolName = tool.name.toLowerCase();
+    
+    if (toolName.includes('gpt') || toolName.includes('openai')) {
+      return [
+        "Natural language processing",
+        "Conversational AI interface", 
+        "Code generation & debugging",
+        "Multi-language support"
       ];
-      return key_features;
+    } else if (toolName.includes('claude') || toolName.includes('anthropic')) {
+      return [
+        "Advanced reasoning capabilities",
+        "Long-form content analysis",
+        "Ethical AI framework",
+        "Constitutional AI approach"
+      ];
+    } else if (toolName.includes('zapier')) {
+      return [
+        "Workflow automation",
+        "1000+ app integrations",
+        "No-code solution",
+        "Real-time sync"
+      ];
+    } else if (toolName.includes('midjourney') || toolName.includes('dall')) {
+      return [
+        "Text-to-image generation",
+        "High-quality artwork",
+        "Style customization",
+        "Commercial licensing"
+      ];
+    } else if (toolName.includes('notion')) {
+      return [
+        "AI writing assistance",
+        "Smart templates",
+        "Knowledge management",
+        "Team collaboration"
+      ];
+    } else if (toolName.includes('figma')) {
+      return [
+        "AI design suggestions",
+        "Automated layouts", 
+        "Smart color palettes",
+        "Template creation"
+      ];
+    } else if (toolName.includes('hubspot') || toolName.includes('salesforce')) {
+      return [
+        "AI lead scoring",
+        "Predictive analytics",
+        "Sales forecasting",
+        "Customer insights"
+      ];
+    } else if (toolName.includes('slack') || toolName.includes('teams')) {
+      return [
+        "AI-powered search",
+        "Smart notifications",
+        "Meeting insights",
+        "Workflow integration"
+      ];
     }
     
-    return ["AI automation tool", "Enhanced productivity", "Easy integration"];
+    // Generic fallback
+    return [
+      "AI-powered automation",
+      "Enhanced productivity",
+      "Seamless integration",
+      "Scalable solution"
+    ];
   };
 
   return (
