@@ -8,8 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useRef } from "react";
 
 
 const toolSchema = z.object({
@@ -33,6 +34,7 @@ type FormData = z.infer<typeof formSchema>;
 const FormPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -118,6 +120,121 @@ const FormPage = () => {
     });
   };
 
+  const handleJsonUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const jsonData = JSON.parse(text);
+      
+      toast({
+        title: "Processing JSON",
+        description: "Parsing JSON file and populating form fields...",
+      });
+
+      // 1. Extract title
+      if (jsonData.title) {
+        form.setValue("topic", jsonData.title);
+      }
+
+      // 2. Extract Business Fundamentals (section_number: 1)
+      const businessSection = jsonData.sections?.find((section: any) => 
+        section.section_title === "Business Fundamentals" && section.section_number === 1
+      );
+      if (businessSection) {
+        form.setValue("businessFundamentals", businessSection.content || "");
+      }
+
+      // 3. Extract Current Solution Landscape (section_number: 2)
+      const currentSolutionSection = jsonData.sections?.find((section: any) => 
+        section.section_title === "Current Solution Landscape" && section.section_number === 2
+      );
+      if (currentSolutionSection) {
+        form.setValue("currentSolutionLandscape", currentSolutionSection.content || "");
+      }
+
+      // 4. Extract AI Fundamentals (section_number: 3)
+      const aiFundamentalsSection = jsonData.sections?.find((section: any) => 
+        section.section_title === "AI Fundamentals" && section.section_number === 3
+      );
+      if (aiFundamentalsSection) {
+        form.setValue("aiFundamentals", aiFundamentalsSection.content || "");
+      }
+
+      // 5. Extract AI Solution and Tools (section_number: 4)
+      const aiSolutionSection = jsonData.sections?.find((section: any) => 
+        section.section_title === "AI Solution and Tools" && section.section_number === 4
+      );
+      if (aiSolutionSection) {
+        form.setValue("aiSolutionAndTools", aiSolutionSection.content || "");
+      }
+
+      // 6. Extract tool names and auto-research them
+      const toolNames: string[] = [];
+      
+      // Search through all sections for tool_name
+      const extractToolNames = (obj: any) => {
+        if (typeof obj === 'object' && obj !== null) {
+          if (Array.isArray(obj)) {
+            obj.forEach(extractToolNames);
+          } else {
+            for (const key in obj) {
+              if (key === 'tool_name' && typeof obj[key] === 'string' && obj[key].trim()) {
+                toolNames.push(obj[key].trim());
+              } else {
+                extractToolNames(obj[key]);
+              }
+            }
+          }
+        }
+      };
+      
+      extractToolNames(jsonData);
+      
+      if (toolNames.length > 0) {
+        // Clear existing tools first
+        const uniqueToolNames = [...new Set(toolNames)]; // Remove duplicates
+        
+        // Set the tools in the form
+        const toolsData = uniqueToolNames.map(name => ({
+          name,
+          description: "",
+          logoUrl: "",
+          comparisonPoints: ""
+        }));
+        
+        form.setValue("aiToolsAppendix", toolsData);
+        
+        // Auto-research each tool with a delay
+        uniqueToolNames.forEach((toolName, index) => {
+          setTimeout(() => {
+            fetchToolInfo(toolName, index);
+          }, index * 1000); // 1 second delay between each research
+        });
+      }
+
+      toast({
+        title: "JSON Uploaded Successfully",
+        description: `Form populated with data from ${file.name}. ${toolNames.length} tools found and will be auto-researched.`,
+      });
+
+      // Auto-submit after all processing is done
+      if (toolNames.length > 0) {
+        setTimeout(() => {
+          form.handleSubmit(onSubmit)();
+        }, toolNames.length * 1000 + 2000); // Wait for all tools to be researched plus 2 extra seconds
+      }
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to parse JSON file. Please check the file format.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const onSubmit = (data: FormData) => {
     // Save data to localStorage
     localStorage.setItem("formData", JSON.stringify(data));
@@ -146,6 +263,37 @@ const FormPage = () => {
         </div>
 
         <Card className="p-8 bg-white/10 border-white/20 backdrop-blur-xl shadow-2xl">
+          {/* JSON Upload Section */}
+          <div className="mb-8 p-4 bg-white/5 border border-white/15 rounded-lg">
+            <Label className="text-white text-lg font-semibold mb-4 block">
+              Quick Start: Upload JSON File
+            </Label>
+            <p className="text-white/70 text-sm mb-4">
+              Upload a JSON file to automatically populate all form fields and research tools
+            </p>
+            <div className="flex items-center gap-4">
+              <Button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                variant="outline"
+                className="bg-primary/20 border-primary/30 text-primary hover:bg-primary/30"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload JSON
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json"
+                onChange={handleJsonUpload}
+                className="hidden"
+              />
+              <span className="text-white/60 text-sm">
+                Accepts .json files only
+              </span>
+            </div>
+          </div>
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               {/* The Topic */}
