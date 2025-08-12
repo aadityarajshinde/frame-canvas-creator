@@ -3,6 +3,7 @@ import { ToolCard } from "@/components/ToolCard";
 import { FormattedText } from "@/components/FormattedText";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { colorThemes, type ColorTheme } from "@/components/ColorThemeSelector";
 import { 
   Building2, 
   Clock, 
@@ -27,16 +28,22 @@ interface FormData {
     logoUrl?: string;
     comparisonPoints: string;
   }>;
+  colorTheme: string;
 }
 
 const ResultsPage = () => {
   const [formData, setFormData] = useState<FormData | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState<ColorTheme | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      const data = JSON.parse(savedData);
+      setFormData(data);
+      // Find and set the selected theme
+      const theme = colorThemes.find(t => t.name === data.colorTheme) || colorThemes[0];
+      setSelectedTheme(theme);
     } else {
       // Redirect to form if no data found
       navigate("/");
@@ -51,11 +58,21 @@ const ResultsPage = () => {
     );
   }
 
+  const dynamicStyles = selectedTheme ? {
+    background: selectedTheme.background,
+    '--primary': selectedTheme.primary,
+    '--secondary': selectedTheme.secondary,
+    '--accent': selectedTheme.accent,
+  } as React.CSSProperties : {};
+
   return (
-    <div className="min-h-screen bg-gradient-background p-6">
+    <div 
+      className="min-h-screen p-6" 
+      style={dynamicStyles}
+    >
       {/* Main Title */}
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-primary mb-2">
+        <h1 className="text-4xl font-bold text-white mb-2" style={{ color: selectedTheme?.primary }}>
           {formData.topic}
         </h1>
       </div>

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { ColorThemeSelector } from "@/components/ColorThemeSelector";
 
 const toolSchema = z.object({
   name: z.string().min(1, "Tool name is required"),
@@ -25,6 +26,7 @@ const formSchema = z.object({
   aiFundamentals: z.string().min(1, "AI Fundamentals is required"),
   aiSolutionAndTools: z.string().min(1, "AI Solution and Tools is required"),
   aiToolsAppendix: z.array(toolSchema).min(1, "At least one tool is required"),
+  colorTheme: z.string().min(1, "Color theme is required"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -42,6 +44,7 @@ const FormPage = () => {
       aiFundamentals: "",
       aiSolutionAndTools: "",
       aiToolsAppendix: [{ name: "", description: "", logoUrl: "", comparisonPoints: "" }],
+      colorTheme: "ocean",
     },
   });
 
@@ -147,6 +150,23 @@ const FormPage = () => {
         <Card className="p-8 bg-white/10 border-white/20 backdrop-blur-xl shadow-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {/* Color Theme Selection */}
+              <FormField
+                control={form.control}
+                name="colorTheme"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <ColorThemeSelector 
+                        selectedTheme={field.value}
+                        onThemeChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               {/* The Topic */}
               <FormField
                 control={form.control}
