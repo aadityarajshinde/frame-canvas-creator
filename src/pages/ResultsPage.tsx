@@ -343,7 +343,7 @@ const ResultsPage = () => {
                 </CardHeader>
                 <CardContent className="pt-0 h-full overflow-auto">
                   <div className="space-y-4">
-                    {formData.aiToolsAppendix.map((tool, index) => (
+                    {formData.aiToolsAppendix.slice(0, 4).map((tool, index) => (
                       <div 
                         key={index}
                         className="p-4 rounded-lg border-2"
