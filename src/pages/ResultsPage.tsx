@@ -266,7 +266,7 @@ const ResultsPage = () => {
               <Card 
                 className="h-full"
                 style={{ 
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: '#2a2a2a',
                   border: '2px solid #00ff41',
                   borderRadius: '12px'
                 }}
@@ -280,7 +280,8 @@ const ResultsPage = () => {
                       <Table className="w-5 h-5 text-black" />
                     </div>
                     <h3 
-                      className="text-lg font-bold text-black"
+                      className="text-lg font-bold"
+                      style={{ color: '#00ff41' }}
                     >
                       AI Tools Appendix (Comparison Table)
                     </h3>
