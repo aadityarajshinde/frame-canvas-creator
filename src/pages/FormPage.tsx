@@ -149,13 +149,21 @@ const FormPage = () => {
           sectionContent = businessSection.content;
         } else {
           // If content is not in a single field, concatenate all text content from the section
-          const extractSectionText = (obj: any): string => {
+          const extractSectionText = (obj: any, key?: string): string => {
             if (typeof obj === "string") return obj;
             if (typeof obj === "object" && obj !== null) {
               if (Array.isArray(obj)) {
-                return obj.map(extractSectionText).join(" ");
+                return obj.map((item, index) => extractSectionText(item, key)).join(" ");
               } else {
-                return Object.values(obj).map(extractSectionText).join(" ");
+                let result = "";
+                for (const [objKey, value] of Object.entries(obj)) {
+                  if (objKey === "term") {
+                    result += "\n" + extractSectionText(value, objKey);
+                  } else {
+                    result += " " + extractSectionText(value, objKey);
+                  }
+                }
+                return result;
               }
             }
             return "";
@@ -174,13 +182,21 @@ const FormPage = () => {
         if (currentSolutionSection.content) {
           sectionContent = currentSolutionSection.content;
         } else {
-          const extractSectionText = (obj: any): string => {
+          const extractSectionText = (obj: any, key?: string): string => {
             if (typeof obj === "string") return obj;
             if (typeof obj === "object" && obj !== null) {
               if (Array.isArray(obj)) {
-                return obj.map(extractSectionText).join(" ");
+                return obj.map((item, index) => extractSectionText(item, key)).join(" ");
               } else {
-                return Object.values(obj).map(extractSectionText).join(" ");
+                let result = "";
+                for (const [objKey, value] of Object.entries(obj)) {
+                  if (objKey === "method") {
+                    result += "\n" + extractSectionText(value, objKey);
+                  } else {
+                    result += " " + extractSectionText(value, objKey);
+                  }
+                }
+                return result;
               }
             }
             return "";
@@ -199,13 +215,21 @@ const FormPage = () => {
         if (aiFundamentalsSection.content) {
           sectionContent = aiFundamentalsSection.content;
         } else {
-          const extractSectionText = (obj: any): string => {
+          const extractSectionText = (obj: any, key?: string): string => {
             if (typeof obj === "string") return obj;
             if (typeof obj === "object" && obj !== null) {
               if (Array.isArray(obj)) {
-                return obj.map(extractSectionText).join(" ");
+                return obj.map((item, index) => extractSectionText(item, key)).join(" ");
               } else {
-                return Object.values(obj).map(extractSectionText).join(" ");
+                let result = "";
+                for (const [objKey, value] of Object.entries(obj)) {
+                  if (objKey === "method") {
+                    result += "\n" + extractSectionText(value, objKey);
+                  } else {
+                    result += " " + extractSectionText(value, objKey);
+                  }
+                }
+                return result;
               }
             }
             return "";
@@ -224,13 +248,21 @@ const FormPage = () => {
         if (aiSolutionSection.content) {
           sectionContent = aiSolutionSection.content;
         } else {
-          const extractSectionText = (obj: any): string => {
+          const extractSectionText = (obj: any, key?: string): string => {
             if (typeof obj === "string") return obj;
             if (typeof obj === "object" && obj !== null) {
               if (Array.isArray(obj)) {
-                return obj.map(extractSectionText).join(" ");
+                return obj.map((item, index) => extractSectionText(item, key)).join(" ");
               } else {
-                return Object.values(obj).map(extractSectionText).join(" ");
+                let result = "";
+                for (const [objKey, value] of Object.entries(obj)) {
+                  if (objKey === "step_number") {
+                    result += "\n" + extractSectionText(value, objKey);
+                  } else {
+                    result += " " + extractSectionText(value, objKey);
+                  }
+                }
+                return result;
               }
             }
             return "";
