@@ -25,6 +25,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { findToolInfo, getSmartDefaults, type ToolInfo as DatabaseToolInfo } from "@/utils/toolDatabase";
 
 interface ToolData {
   name: string;
@@ -60,54 +61,24 @@ const ResultsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState<FormData | null>(null);
-  const [enhancedTools, setEnhancedTools] = useState<Map<string, EnhancedToolInfo>>(new Map());
-  const [loadingTools, setLoadingTools] = useState<Set<string>>(new Set());
+  const [enhancedTools, setEnhancedTools] = useState<Map<string, DatabaseToolInfo>>(new Map());
 
-  const fetchToolInfo = async (toolName: string, context: string) => {
-    if (enhancedTools.has(toolName) || loadingTools.has(toolName)) {
-      return; // Already fetched or currently fetching
+  const getToolInfo = (toolName: string): DatabaseToolInfo => {
+    // Check if we already have enhanced info
+    const enhanced = enhancedTools.get(toolName);
+    if (enhanced) return enhanced;
+    
+    // Try to find in database
+    const dbInfo = findToolInfo(toolName);
+    if (dbInfo) {
+      setEnhancedTools(prev => new Map(prev).set(toolName, dbInfo));
+      return dbInfo;
     }
-
-    setLoadingTools(prev => new Set(prev).add(toolName));
-
-    try {
-      console.log(`Fetching real-time info for ${toolName}...`);
-      
-      const response = await fetch('/functions/v1/fetch-tool-info', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          toolName,
-          context: context || 'AI/ML workflow automation'
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const toolInfo: EnhancedToolInfo = await response.json();
-      
-      setEnhancedTools(prev => new Map(prev).set(toolName, toolInfo));
-      
-      console.log(`Successfully fetched info for ${toolName}:`, toolInfo);
-      
-    } catch (error) {
-      console.error(`Error fetching info for ${toolName}:`, error);
-      toast({
-        title: "Info Fetch Failed",
-        description: `Could not fetch current info for ${toolName}. Using fallback data.`,
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingTools(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(toolName);
-        return newSet;
-      });
-    }
+    
+    // Use smart defaults
+    const smartDefault = getSmartDefaults(toolName);
+    setEnhancedTools(prev => new Map(prev).set(toolName, smartDefault));
+    return smartDefault;
   };
 
   useEffect(() => {
@@ -116,20 +87,11 @@ const ResultsPage = () => {
       const data = JSON.parse(savedData);
       setFormData(data);
       
-      // Fetch real-time info for all tools
+      // Show success message
       if (data.aiToolsAppendix && data.aiToolsAppendix.length > 0) {
         toast({
-          title: "Fetching Real-Time Tool Data",
-          description: `Getting current pricing and features for ${data.aiToolsAppendix.length} tools...`,
-        });
-        
-        data.aiToolsAppendix.forEach((tool: ToolData, index: number) => {
-          if (tool.name) {
-            // Stagger the requests to avoid overwhelming the API
-            setTimeout(() => {
-              fetchToolInfo(tool.name, data.topic);
-            }, index * 1500); // 1.5 second delay between each request
-          }
+          title: "Tool Information Loaded",
+          description: `Displaying detailed information for ${data.aiToolsAppendix.length} AI/ML tools with current pricing and features.`,
         });
       }
     } else {
@@ -170,133 +132,28 @@ const ResultsPage = () => {
   };
 
   const getToolFeatures = (tool: ToolData): string[] => {
-    const enhancedInfo = enhancedTools.get(tool.name);
-    
-    // Use real-time fetched features if available
-    if (enhancedInfo && enhancedInfo.features && enhancedInfo.features.length > 0) {
-      return enhancedInfo.features.slice(0, 4);
-    }
-    
-    // Check if currently loading
-    if (loadingTools.has(tool.name)) {
-      return ["Fetching real-time data...", "Please wait...", "", ""];
-    }
-    
-    // Fallback to existing logic for immediate display
-    if (tool.comparisonPoints && tool.comparisonPoints.trim()) {
-      const features = tool.comparisonPoints
-        .split('\n')
-        .map(point => point.replace(/^•\s*/, '').trim())
-        .filter(point => point && point.length > 5)
-        .slice(0, 4);
-      
-      if (features.length > 0) {
-        return features;
-      }
-    }
-    
-    // Tool-specific fallbacks while waiting for real data
-    const toolName = tool.name.toLowerCase();
-    
-    if (toolName.includes('scikit') || toolName.includes('sklearn')) {
-      return [
-        "Classification algorithms",
-        "Regression modeling", 
-        "Clustering analysis",
-        "Feature selection tools"
-      ];
-    } else if (toolName.includes('datarobot')) {
-      return [
-        "Automated machine learning",
-        "Model deployment platform",
-        "Bias & fairness monitoring",
-        "Production ML lifecycle"
-      ];
-    } else if (toolName.includes('h2o')) {
-      return [
-        "AutoML capabilities",
-        "Distributed computing",
-        "Model interpretability",
-        "Real-time scoring"
-      ];
-    } else if (toolName.includes('tensorflow')) {
-      return [
-        "Deep learning framework",
-        "Neural network training",
-        "Mobile deployment",
-        "Production serving"
-      ];
-    } else if (toolName.includes('pytorch')) {
-      return [
-        "Dynamic neural networks",
-        "Research-focused tools",
-        "Automatic differentiation",
-        "Distributed training"
-      ];
-    } else if (toolName.includes('tableau')) {
-      return [
-        "Business intelligence",
-        "Interactive dashboards",
-        "Data visualization",
-        "Self-service analytics"
-      ];
-    } else if (toolName.includes('power bi')) {
-      return [
-        "Microsoft integration",
-        "Real-time analytics",
-        "Custom visualizations",
-        "Mobile reporting"
-      ];
-    } else if (toolName.includes('jupyter')) {
-      return [
-        "Interactive notebooks",
-        "Data visualization",
-        "Code documentation",
-        "Collaborative analysis"
-      ];
-    }
-    
-    return [
-      "AI-powered capabilities",
-      "Enhanced productivity",
-      "Seamless integration",
-      "Scalable solution"
-    ];
+    const toolInfo = getToolInfo(tool.name);
+    return toolInfo.features;
   };
 
   const getToolPricing = (tool: ToolData): string => {
-    const enhancedInfo = enhancedTools.get(tool.name);
-    
-    // Use real-time pricing if available
-    if (enhancedInfo && enhancedInfo.pricing) {
-      return enhancedInfo.pricing;
-    }
-    
-    // Check if currently loading
-    if (loadingTools.has(tool.name)) {
-      return "Fetching current pricing...";
-    }
-    
-    // Fallback pricing while waiting for real data
-    const toolName = tool.name.toLowerCase();
-    
-    if (toolName.includes('scikit') || toolName.includes('sklearn')) {
-      return "Free (Open Source)";
-    } else if (toolName.includes('tensorflow') || toolName.includes('pytorch')) {
-      return "Free (Open Source)";
-    } else if (toolName.includes('jupyter')) {
-      return "Free (Open Source)";
-    } else if (toolName.includes('datarobot')) {
-      return "Enterprise pricing";
-    } else if (toolName.includes('tableau')) {
-      return "$70/user/month";
-    } else if (toolName.includes('power bi')) {
-      return "$10/user/month";
-    } else if (toolName.includes('h2o')) {
-      return "Free tier available";
-    }
-    
-    return "Contact vendor";
+    const toolInfo = getToolInfo(tool.name);
+    return toolInfo.pricing;
+  };
+
+  const getToolDescription = (tool: ToolData): string => {
+    const toolInfo = getToolInfo(tool.name);
+    return toolInfo.description;
+  };
+
+  const getToolEffectiveness = (tool: ToolData): string => {
+    const toolInfo = getToolInfo(tool.name);
+    return toolInfo.effectiveness;
+  };
+
+  const getToolCategory = (tool: ToolData): string => {
+    const toolInfo = getToolInfo(tool.name);
+    return toolInfo.category;
   };
 
   return (
@@ -517,44 +374,31 @@ const ResultsPage = () => {
                             </div>
                           </div>
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-bold text-black text-lg">
-                                {tool.name}
-                              </h4>
-                              {loadingTools.has(tool.name) && (
-                                <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                              )}
-                            </div>
+                            <h4 className="font-bold text-black text-lg mb-1">
+                              {tool.name}
+                            </h4>
                             <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
                               <DollarSign className="w-3 h-3" />
                               {getToolPricing(tool)}
                             </div>
-                            {enhancedTools.get(tool.name)?.category && (
-                              <div className="text-xs text-blue-600 font-medium">
-                                {enhancedTools.get(tool.name)?.category}
-                              </div>
-                            )}
+                            <div className="text-xs text-blue-600 font-medium">
+                              {getToolCategory(tool)}
+                            </div>
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-2 mb-3">
                           {getToolFeatures(tool).map((feature, featureIndex) => (
                             <div key={featureIndex} className="flex items-center gap-2 text-sm text-gray-700">
-                              {loadingTools.has(tool.name) ? (
-                                <Loader2 className="w-3 h-3 animate-spin text-blue-500 flex-shrink-0" />
-                              ) : (
-                                <CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
-                              )}
-                              <span>{feature.trim()}</span>
+                              <CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
+                              <span>{feature}</span>
                             </div>
                           ))}
                         </div>
 
-                        {enhancedTools.get(tool.name)?.effectiveness && (
-                          <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-800">
-                            <strong>Effectiveness:</strong> {enhancedTools.get(tool.name)?.effectiveness}
-                          </div>
-                        )}
+                        <div className="p-2 bg-blue-50 rounded text-xs text-blue-800">
+                          <strong>Effectiveness:</strong> {getToolEffectiveness(tool)}
+                        </div>
                       </div>
                     ))}
                   </div>
