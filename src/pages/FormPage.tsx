@@ -150,23 +150,6 @@ const FormPage = () => {
         <Card className="p-8 bg-white/10 border-white/20 backdrop-blur-xl shadow-2xl">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              {/* Color Theme Selection */}
-              <FormField
-                control={form.control}
-                name="colorTheme"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <ColorThemeSelector 
-                        selectedTheme={field.value}
-                        onThemeChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* The Topic */}
               <FormField
                 control={form.control}
@@ -384,6 +367,23 @@ const FormPage = () => {
                   </Card>
                 ))}
               </div>
+
+              {/* Color Theme Selection */}
+              <FormField
+                control={form.control}
+                name="colorTheme"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <ColorThemeSelector 
+                        selectedTheme={field.value}
+                        onThemeChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="flex justify-center pt-6">
                 <Button 
