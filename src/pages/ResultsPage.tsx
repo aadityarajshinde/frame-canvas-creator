@@ -53,24 +53,14 @@ const ResultsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-background p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Topic Card */}
-        <div className="mb-6">
-          <DashboardCard
-            title="Research Topic"
-            icon={<Globe className="h-6 w-6" />}
-            variant="accent"
-            content={
-              <div className="flex items-center justify-center min-h-[100px]">
-                <h2 className="text-2xl font-bold text-white text-center">
-                  {formData.topic}
-                </h2>
-              </div>
-            }
-          />
-        </div>
+      {/* Main Title */}
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold text-primary mb-2">
+          {formData.topic}
+        </h1>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Dashboard Grid */}
         <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Business Fundamentals */}
@@ -127,7 +117,6 @@ const ResultsPage = () => {
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };
