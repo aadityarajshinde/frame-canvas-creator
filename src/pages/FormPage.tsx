@@ -140,34 +140,104 @@ const FormPage = () => {
 
       // 2. Extract Business Fundamentals (section_number: 1)
       const businessSection = jsonData.sections?.find((section: any) => 
-        section.section_title === "Business Fundamentals" && section.section_number === 1
+        section.section_number === 1 && section.section_title === "Business Fundamentals"
       );
       if (businessSection) {
-        form.setValue("businessFundamentals", businessSection.content || "");
+        // Extract all content from this section, stopping before the next section
+        let sectionContent = "";
+        if (businessSection.content) {
+          sectionContent = businessSection.content;
+        } else {
+          // If content is not in a single field, concatenate all text content from the section
+          const extractSectionText = (obj: any): string => {
+            if (typeof obj === "string") return obj;
+            if (typeof obj === "object" && obj !== null) {
+              if (Array.isArray(obj)) {
+                return obj.map(extractSectionText).join(" ");
+              } else {
+                return Object.values(obj).map(extractSectionText).join(" ");
+              }
+            }
+            return "";
+          };
+          sectionContent = extractSectionText(businessSection);
+        }
+        form.setValue("businessFundamentals", sectionContent.trim());
       }
 
       // 3. Extract Current Solution Landscape (section_number: 2)
       const currentSolutionSection = jsonData.sections?.find((section: any) => 
-        section.section_title === "Current Solution Landscape" && section.section_number === 2
+        section.section_number === 2 && section.section_title === "Current Solution Landscape"
       );
       if (currentSolutionSection) {
-        form.setValue("currentSolutionLandscape", currentSolutionSection.content || "");
+        let sectionContent = "";
+        if (currentSolutionSection.content) {
+          sectionContent = currentSolutionSection.content;
+        } else {
+          const extractSectionText = (obj: any): string => {
+            if (typeof obj === "string") return obj;
+            if (typeof obj === "object" && obj !== null) {
+              if (Array.isArray(obj)) {
+                return obj.map(extractSectionText).join(" ");
+              } else {
+                return Object.values(obj).map(extractSectionText).join(" ");
+              }
+            }
+            return "";
+          };
+          sectionContent = extractSectionText(currentSolutionSection);
+        }
+        form.setValue("currentSolutionLandscape", sectionContent.trim());
       }
 
       // 4. Extract AI Fundamentals (section_number: 3)
       const aiFundamentalsSection = jsonData.sections?.find((section: any) => 
-        section.section_title === "AI Fundamentals" && section.section_number === 3
+        section.section_number === 3 && section.section_title === "AI Fundamentals"
       );
       if (aiFundamentalsSection) {
-        form.setValue("aiFundamentals", aiFundamentalsSection.content || "");
+        let sectionContent = "";
+        if (aiFundamentalsSection.content) {
+          sectionContent = aiFundamentalsSection.content;
+        } else {
+          const extractSectionText = (obj: any): string => {
+            if (typeof obj === "string") return obj;
+            if (typeof obj === "object" && obj !== null) {
+              if (Array.isArray(obj)) {
+                return obj.map(extractSectionText).join(" ");
+              } else {
+                return Object.values(obj).map(extractSectionText).join(" ");
+              }
+            }
+            return "";
+          };
+          sectionContent = extractSectionText(aiFundamentalsSection);
+        }
+        form.setValue("aiFundamentals", sectionContent.trim());
       }
 
       // 5. Extract AI Solution and Tools (section_number: 4)
       const aiSolutionSection = jsonData.sections?.find((section: any) => 
-        section.section_title === "AI Solution and Tools" && section.section_number === 4
+        section.section_number === 4 && section.section_title === "AI Solution and Tools"
       );
       if (aiSolutionSection) {
-        form.setValue("aiSolutionAndTools", aiSolutionSection.content || "");
+        let sectionContent = "";
+        if (aiSolutionSection.content) {
+          sectionContent = aiSolutionSection.content;
+        } else {
+          const extractSectionText = (obj: any): string => {
+            if (typeof obj === "string") return obj;
+            if (typeof obj === "object" && obj !== null) {
+              if (Array.isArray(obj)) {
+                return obj.map(extractSectionText).join(" ");
+              } else {
+                return Object.values(obj).map(extractSectionText).join(" ");
+              }
+            }
+            return "";
+          };
+          sectionContent = extractSectionText(aiSolutionSection);
+        }
+        form.setValue("aiSolutionAndTools", sectionContent.trim());
       }
 
       // 6. Extract tool names and auto-research them
