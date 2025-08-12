@@ -81,14 +81,8 @@ const ResultsPage = () => {
     });
   };
 
-  const getToolIcon = (toolName: string) => {
-    const name = toolName.toLowerCase();
-    if (name.includes('zapier') || name.includes('automation')) return <Zap className="w-4 h-4" />;
-    if (name.includes('power') || name.includes('bi')) return <BarChart3 className="w-4 h-4" />;
-    if (name.includes('python') || name.includes('code')) return <Code className="w-4 h-4" />;
-    if (name.includes('chat') || name.includes('gpt')) return <MessageSquare className="w-4 h-4" />;
-    if (name.includes('vertex') || name.includes('google')) return <Brain className="w-4 h-4" />;
-    return <Cog className="w-4 h-4" />;
+  const getToolInitial = (toolName: string) => {
+    return toolName.charAt(0).toUpperCase();
   };
 
   const getToolPricing = (toolName: string) => {
@@ -318,10 +312,10 @@ const ResultsPage = () => {
                               />
                             ) : null}
                             <div 
-                              className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center"
+                              className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center text-gray-600 font-semibold text-sm"
                               style={{ display: tool.logoUrl ? 'none' : 'flex' }}
                             >
-                              {getToolIcon(tool.name)}
+                              {getToolInitial(tool.name)}
                             </div>
                           </div>
                           <div className="flex-1">
