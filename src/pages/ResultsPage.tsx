@@ -126,7 +126,180 @@ const ResultsPage = () => {
     // Fallback: Tool-specific features based on tool name
     const toolName = tool.name.toLowerCase();
     
-    if (toolName.includes('gpt') || toolName.includes('openai')) {
+    // Machine Learning & Data Science Tools
+    if (toolName.includes('scikit') || toolName.includes('sklearn')) {
+      return [
+        "Classification algorithms",
+        "Regression modeling", 
+        "Clustering analysis",
+        "Feature selection tools"
+      ];
+    } else if (toolName.includes('datarobot')) {
+      return [
+        "Automated machine learning",
+        "Model deployment",
+        "Bias & fairness monitoring",
+        "Production ML lifecycle"
+      ];
+    } else if (toolName.includes('h2o')) {
+      return [
+        "AutoML capabilities",
+        "Distributed computing",
+        "Model interpretability",
+        "Real-time scoring"
+      ];
+    } else if (toolName.includes('tensorflow')) {
+      return [
+        "Deep learning framework",
+        "Neural network training",
+        "GPU acceleration",
+        "Production deployment"
+      ];
+    } else if (toolName.includes('pytorch')) {
+      return [
+        "Dynamic neural networks",
+        "Research-focused tools",
+        "Automatic differentiation",
+        "Distributed training"
+      ];
+    } else if (toolName.includes('pandas')) {
+      return [
+        "Data manipulation",
+        "Time series analysis",
+        "Data cleaning tools",
+        "Statistical operations"
+      ];
+    } else if (toolName.includes('jupyter')) {
+      return [
+        "Interactive notebooks",
+        "Data visualization",
+        "Code documentation",
+        "Collaborative analysis"
+      ];
+    } else if (toolName.includes('tableau')) {
+      return [
+        "Business intelligence",
+        "Interactive dashboards",
+        "Data visualization",
+        "Self-service analytics"
+      ];
+    } else if (toolName.includes('power bi') || toolName.includes('powerbi')) {
+      return [
+        "Microsoft ecosystem integration",
+        "Real-time analytics",
+        "Custom visualizations",
+        "Mobile reporting"
+      ];
+    } else if (toolName.includes('azure') && toolName.includes('ml')) {
+      return [
+        "Cloud ML platform",
+        "MLOps capabilities",
+        "Model management",
+        "Automated pipelines"
+      ];
+    } else if (toolName.includes('aws') && (toolName.includes('sagemaker') || toolName.includes('ml'))) {
+      return [
+        "Cloud-native ML",
+        "Managed infrastructure",
+        "Built-in algorithms",
+        "Model hosting"
+      ];
+    } else if (toolName.includes('vertex') || (toolName.includes('google') && toolName.includes('ai'))) {
+      return [
+        "Unified ML platform",
+        "Pre-trained models",
+        "AutoML features",
+        "MLOps workflows"
+      ];
+    } else if (toolName.includes('databricks')) {
+      return [
+        "Unified analytics platform",
+        "Collaborative notebooks",
+        "Delta Lake integration",
+        "MLflow model tracking"
+      ];
+    } else if (toolName.includes('snowflake')) {
+      return [
+        "Data cloud platform",
+        "Scalable compute",
+        "Built-in ML functions",
+        "Data sharing"
+      ];
+    } else if (toolName.includes('alteryx')) {
+      return [
+        "Self-service data prep",
+        "Drag-and-drop interface",
+        "Advanced analytics",
+        "Process automation"
+      ];
+    } else if (toolName.includes('knime')) {
+      return [
+        "Visual workflow design",
+        "Open-source platform",
+        "Extensible architecture",
+        "Data integration"
+      ];
+    } else if (toolName.includes('rapidminer')) {
+      return [
+        "End-to-end data science",
+        "Visual workflow",
+        "Auto-model selection",
+        "Deployment automation"
+      ];
+    } else if (toolName.includes('spss')) {
+      return [
+        "Statistical analysis",
+        "Predictive modeling",
+        "Survey research tools",
+        "Advanced statistics"
+      ];
+    } else if (toolName.includes('sas')) {
+      return [
+        "Enterprise analytics",
+        "Statistical modeling",
+        "Data management",
+        "Regulatory compliance"
+      ];
+    } else if (toolName.includes('r studio') || toolName.includes('rstudio')) {
+      return [
+        "R programming IDE",
+        "Statistical computing",
+        "Package management",
+        "Reproducible research"
+      ];
+    } else if (toolName.includes('anaconda')) {
+      return [
+        "Python/R distribution",
+        "Package management",
+        "Environment isolation",
+        "Data science toolkit"
+      ];
+    } 
+    // AI/ML Specialized Tools
+    else if (toolName.includes('hugging') || toolName.includes('face')) {
+      return [
+        "Pre-trained NLP models",
+        "Model fine-tuning",
+        "Transformer architecture",
+        "Open-source community"
+      ];
+    } else if (toolName.includes('wandb')) {
+      return [
+        "Experiment tracking",
+        "Model versioning",
+        "Hyperparameter tuning",
+        "Collaborative ML"
+      ];
+    } else if (toolName.includes('mlflow')) {
+      return [
+        "ML lifecycle management",
+        "Experiment tracking",
+        "Model registry",
+        "Deployment tools"
+      ];
+    }
+    // General AI Tools
+    else if (toolName.includes('gpt') || toolName.includes('openai')) {
       return [
         "Natural language processing",
         "Conversational AI interface", 
