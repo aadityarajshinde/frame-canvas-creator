@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { ColorThemeSelector } from "@/components/ColorThemeSelector";
+
 
 const toolSchema = z.object({
   name: z.string().min(1, "Tool name is required"),
@@ -26,7 +26,6 @@ const formSchema = z.object({
   aiFundamentals: z.string().min(1, "AI Fundamentals is required"),
   aiSolutionAndTools: z.string().min(1, "AI Solution and Tools is required"),
   aiToolsAppendix: z.array(toolSchema).min(1, "At least one tool is required"),
-  colorTheme: z.string().min(1, "Color theme is required"),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -44,7 +43,6 @@ const FormPage = () => {
       aiFundamentals: "",
       aiSolutionAndTools: "",
       aiToolsAppendix: [{ name: "", description: "", logoUrl: "", comparisonPoints: "" }],
-      colorTheme: "ocean",
     },
   });
 
@@ -368,22 +366,6 @@ const FormPage = () => {
                 ))}
               </div>
 
-              {/* Color Theme Selection */}
-              <FormField
-                control={form.control}
-                name="colorTheme"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <ColorThemeSelector 
-                        selectedTheme={field.value}
-                        onThemeChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <div className="flex justify-center pt-6">
                 <Button 
