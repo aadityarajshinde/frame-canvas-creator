@@ -118,12 +118,17 @@ const ResultsPage = () => {
       
       // Fetch real-time info for all tools
       if (data.aiToolsAppendix && data.aiToolsAppendix.length > 0) {
+        toast({
+          title: "Fetching Real-Time Tool Data",
+          description: `Getting current pricing and features for ${data.aiToolsAppendix.length} tools...`,
+        });
+        
         data.aiToolsAppendix.forEach((tool: ToolData, index: number) => {
           if (tool.name) {
             // Stagger the requests to avoid overwhelming the API
             setTimeout(() => {
               fetchToolInfo(tool.name, data.topic);
-            }, index * 2000); // 2 second delay between each request
+            }, index * 1500); // 1.5 second delay between each request
           }
         });
       }
