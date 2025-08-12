@@ -157,6 +157,10 @@ const FormPage = () => {
               } else {
                 let result = "";
                 for (const [objKey, value] of Object.entries(obj)) {
+                  // Skip metadata fields
+                  if (objKey === "section_number" || objKey === "section_title") {
+                    continue;
+                  }
                   if (objKey === "term") {
                     result += "\n" + extractSectionText(value, objKey);
                   } else {
@@ -190,6 +194,10 @@ const FormPage = () => {
               } else {
                 let result = "";
                 for (const [objKey, value] of Object.entries(obj)) {
+                  // Skip metadata fields
+                  if (objKey === "section_number" || objKey === "section_title") {
+                    continue;
+                  }
                   if (objKey === "method") {
                     result += "\n" + extractSectionText(value, objKey);
                   } else {
@@ -223,6 +231,10 @@ const FormPage = () => {
               } else {
                 let result = "";
                 for (const [objKey, value] of Object.entries(obj)) {
+                  // Skip metadata fields
+                  if (objKey === "section_number" || objKey === "section_title") {
+                    continue;
+                  }
                   if (objKey === "method") {
                     result += "\n" + extractSectionText(value, objKey);
                   } else {
@@ -256,6 +268,10 @@ const FormPage = () => {
               } else {
                 let result = "";
                 for (const [objKey, value] of Object.entries(obj)) {
+                  // Skip metadata fields
+                  if (objKey === "section_number" || objKey === "section_title") {
+                    continue;
+                  }
                   if (objKey === "step_number") {
                     result += "\n" + extractSectionText(value, objKey);
                   } else {
