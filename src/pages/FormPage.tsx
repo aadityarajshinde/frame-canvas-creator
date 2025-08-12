@@ -260,11 +260,17 @@ const FormPage = () => {
         if (aiSolutionSection.content) {
           sectionContent = aiSolutionSection.content;
         } else {
-          const extractSectionText = (obj: any, key?: string): string => {
+          const extractSectionText = (obj: any, key?: string, stopAtStep5?: boolean): string => {
             if (typeof obj === "string") return obj;
             if (typeof obj === "object" && obj !== null) {
               if (Array.isArray(obj)) {
-                return obj.map((item, index) => extractSectionText(item, key)).join(" ");
+                return obj.map((item, index) => {
+                  // Stop processing if we encounter step_number 5 and beyond
+                  if (stopAtStep5 && item.step_number && item.step_number > 5) {
+                    return "";
+                  }
+                  return extractSectionText(item, key, stopAtStep5);
+                }).join(" ");
               } else {
                 let result = "";
                 for (const [objKey, value] of Object.entries(obj)) {
@@ -272,10 +278,18 @@ const FormPage = () => {
                   if (objKey === "section_number" || objKey === "section_title") {
                     continue;
                   }
+                  // Skip advantages and everything after step 5
+                  if (objKey === "advantages") {
+                    continue;
+                  }
+                  // Check if this is a step beyond 5
+                  if (stopAtStep5 && objKey === "step_number" && typeof value === "number" && value > 5) {
+                    break;
+                  }
                   if (objKey === "step_number") {
-                    result += "\n" + extractSectionText(value, objKey);
+                    result += "\n" + extractSectionText(value, objKey, stopAtStep5);
                   } else {
-                    result += " " + extractSectionText(value, objKey);
+                    result += " " + extractSectionText(value, objKey, stopAtStep5);
                   }
                 }
                 return result;
@@ -283,7 +297,7 @@ const FormPage = () => {
             }
             return "";
           };
-          sectionContent = extractSectionText(aiSolutionSection);
+          sectionContent = extractSectionText(aiSolutionSection, undefined, true);
         }
         form.setValue("aiSolutionAndTools", sectionContent.trim());
       }
