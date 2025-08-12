@@ -21,14 +21,30 @@ import {
   Star,
   Lightbulb,
   Settings,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ToolData {
   name: string;
   description?: string;
   logoUrl?: string;
   comparisonPoints?: string;
+  pricing?: string;
+  features?: string[];
+  effectiveness?: string;
+  category?: string;
+  isLoading?: boolean;
+}
+
+interface EnhancedToolInfo {
+  name: string;
+  pricing: string;
+  features: string[];
+  description: string;
+  effectiveness: string;
+  category: string;
 }
 
 interface FormData {
@@ -42,12 +58,75 @@ interface FormData {
 
 const ResultsPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [formData, setFormData] = useState<FormData | null>(null);
+  const [enhancedTools, setEnhancedTools] = useState<Map<string, EnhancedToolInfo>>(new Map());
+  const [loadingTools, setLoadingTools] = useState<Set<string>>(new Set());
+
+  const fetchToolInfo = async (toolName: string, context: string) => {
+    if (enhancedTools.has(toolName) || loadingTools.has(toolName)) {
+      return; // Already fetched or currently fetching
+    }
+
+    setLoadingTools(prev => new Set(prev).add(toolName));
+
+    try {
+      console.log(`Fetching real-time info for ${toolName}...`);
+      
+      const response = await fetch('/functions/v1/fetch-tool-info', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          toolName,
+          context: context || 'AI/ML workflow automation'
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const toolInfo: EnhancedToolInfo = await response.json();
+      
+      setEnhancedTools(prev => new Map(prev).set(toolName, toolInfo));
+      
+      console.log(`Successfully fetched info for ${toolName}:`, toolInfo);
+      
+    } catch (error) {
+      console.error(`Error fetching info for ${toolName}:`, error);
+      toast({
+        title: "Info Fetch Failed",
+        description: `Could not fetch current info for ${toolName}. Using fallback data.`,
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingTools(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(toolName);
+        return newSet;
+      });
+    }
+  };
 
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      const data = JSON.parse(savedData);
+      setFormData(data);
+      
+      // Fetch real-time info for all tools
+      if (data.aiToolsAppendix && data.aiToolsAppendix.length > 0) {
+        data.aiToolsAppendix.forEach((tool: ToolData, index: number) => {
+          if (tool.name) {
+            // Stagger the requests to avoid overwhelming the API
+            setTimeout(() => {
+              fetchToolInfo(tool.name, data.topic);
+            }, index * 2000); // 2 second delay between each request
+          }
+        });
+      }
     } else {
       navigate("/");
     }
@@ -85,18 +164,20 @@ const ResultsPage = () => {
     return toolName.charAt(0).toUpperCase();
   };
 
-  const getToolPricing = (toolName: string) => {
-    const name = toolName.toLowerCase();
-    if (name.includes('n8n')) return "Free / $20/mo";
-    if (name.includes('zapier')) return "$19.99/mo";
-    if (name.includes('power')) return "$10/user/mo";
-    if (name.includes('python')) return "Free";
-    if (name.includes('vertex')) return "Contact vendor";
-    return "Contact vendor";
-  };
-
-  const getToolFeatures = (tool: ToolData) => {
-    // First priority: Use comparisonPoints which contains the actual tool-specific features
+  const getToolFeatures = (tool: ToolData): string[] => {
+    const enhancedInfo = enhancedTools.get(tool.name);
+    
+    // Use real-time fetched features if available
+    if (enhancedInfo && enhancedInfo.features && enhancedInfo.features.length > 0) {
+      return enhancedInfo.features.slice(0, 4);
+    }
+    
+    // Check if currently loading
+    if (loadingTools.has(tool.name)) {
+      return ["Fetching real-time data...", "Please wait...", "", ""];
+    }
+    
+    // Fallback to existing logic for immediate display
     if (tool.comparisonPoints && tool.comparisonPoints.trim()) {
       const features = tool.comparisonPoints
         .split('\n')
@@ -109,24 +190,9 @@ const ResultsPage = () => {
       }
     }
     
-    // Second priority: Extract features from description
-    if (tool.description && tool.description.trim()) {
-      // Look for sentences that describe capabilities
-      const sentences = tool.description
-        .split(/[.!?]/)
-        .map(s => s.trim())
-        .filter(s => s.length > 10 && s.length < 80)
-        .slice(0, 4);
-      
-      if (sentences.length > 0) {
-        return sentences;
-      }
-    }
-    
-    // Fallback: Tool-specific features based on tool name
+    // Tool-specific fallbacks while waiting for real data
     const toolName = tool.name.toLowerCase();
     
-    // Machine Learning & Data Science Tools
     if (toolName.includes('scikit') || toolName.includes('sklearn')) {
       return [
         "Classification algorithms",
@@ -137,7 +203,7 @@ const ResultsPage = () => {
     } else if (toolName.includes('datarobot')) {
       return [
         "Automated machine learning",
-        "Model deployment",
+        "Model deployment platform",
         "Bias & fairness monitoring",
         "Production ML lifecycle"
       ];
@@ -152,8 +218,8 @@ const ResultsPage = () => {
       return [
         "Deep learning framework",
         "Neural network training",
-        "GPU acceleration",
-        "Production deployment"
+        "Mobile deployment",
+        "Production serving"
       ];
     } else if (toolName.includes('pytorch')) {
       return [
@@ -162,12 +228,19 @@ const ResultsPage = () => {
         "Automatic differentiation",
         "Distributed training"
       ];
-    } else if (toolName.includes('pandas')) {
+    } else if (toolName.includes('tableau')) {
       return [
-        "Data manipulation",
-        "Time series analysis",
-        "Data cleaning tools",
-        "Statistical operations"
+        "Business intelligence",
+        "Interactive dashboards",
+        "Data visualization",
+        "Self-service analytics"
+      ];
+    } else if (toolName.includes('power bi')) {
+      return [
+        "Microsoft integration",
+        "Real-time analytics",
+        "Custom visualizations",
+        "Mobile reporting"
       ];
     } else if (toolName.includes('jupyter')) {
       return [
@@ -176,194 +249,49 @@ const ResultsPage = () => {
         "Code documentation",
         "Collaborative analysis"
       ];
-    } else if (toolName.includes('tableau')) {
-      return [
-        "Business intelligence",
-        "Interactive dashboards",
-        "Data visualization",
-        "Self-service analytics"
-      ];
-    } else if (toolName.includes('power bi') || toolName.includes('powerbi')) {
-      return [
-        "Microsoft ecosystem integration",
-        "Real-time analytics",
-        "Custom visualizations",
-        "Mobile reporting"
-      ];
-    } else if (toolName.includes('azure') && toolName.includes('ml')) {
-      return [
-        "Cloud ML platform",
-        "MLOps capabilities",
-        "Model management",
-        "Automated pipelines"
-      ];
-    } else if (toolName.includes('aws') && (toolName.includes('sagemaker') || toolName.includes('ml'))) {
-      return [
-        "Cloud-native ML",
-        "Managed infrastructure",
-        "Built-in algorithms",
-        "Model hosting"
-      ];
-    } else if (toolName.includes('vertex') || (toolName.includes('google') && toolName.includes('ai'))) {
-      return [
-        "Unified ML platform",
-        "Pre-trained models",
-        "AutoML features",
-        "MLOps workflows"
-      ];
-    } else if (toolName.includes('databricks')) {
-      return [
-        "Unified analytics platform",
-        "Collaborative notebooks",
-        "Delta Lake integration",
-        "MLflow model tracking"
-      ];
-    } else if (toolName.includes('snowflake')) {
-      return [
-        "Data cloud platform",
-        "Scalable compute",
-        "Built-in ML functions",
-        "Data sharing"
-      ];
-    } else if (toolName.includes('alteryx')) {
-      return [
-        "Self-service data prep",
-        "Drag-and-drop interface",
-        "Advanced analytics",
-        "Process automation"
-      ];
-    } else if (toolName.includes('knime')) {
-      return [
-        "Visual workflow design",
-        "Open-source platform",
-        "Extensible architecture",
-        "Data integration"
-      ];
-    } else if (toolName.includes('rapidminer')) {
-      return [
-        "End-to-end data science",
-        "Visual workflow",
-        "Auto-model selection",
-        "Deployment automation"
-      ];
-    } else if (toolName.includes('spss')) {
-      return [
-        "Statistical analysis",
-        "Predictive modeling",
-        "Survey research tools",
-        "Advanced statistics"
-      ];
-    } else if (toolName.includes('sas')) {
-      return [
-        "Enterprise analytics",
-        "Statistical modeling",
-        "Data management",
-        "Regulatory compliance"
-      ];
-    } else if (toolName.includes('r studio') || toolName.includes('rstudio')) {
-      return [
-        "R programming IDE",
-        "Statistical computing",
-        "Package management",
-        "Reproducible research"
-      ];
-    } else if (toolName.includes('anaconda')) {
-      return [
-        "Python/R distribution",
-        "Package management",
-        "Environment isolation",
-        "Data science toolkit"
-      ];
-    } 
-    // AI/ML Specialized Tools
-    else if (toolName.includes('hugging') || toolName.includes('face')) {
-      return [
-        "Pre-trained NLP models",
-        "Model fine-tuning",
-        "Transformer architecture",
-        "Open-source community"
-      ];
-    } else if (toolName.includes('wandb')) {
-      return [
-        "Experiment tracking",
-        "Model versioning",
-        "Hyperparameter tuning",
-        "Collaborative ML"
-      ];
-    } else if (toolName.includes('mlflow')) {
-      return [
-        "ML lifecycle management",
-        "Experiment tracking",
-        "Model registry",
-        "Deployment tools"
-      ];
-    }
-    // General AI Tools
-    else if (toolName.includes('gpt') || toolName.includes('openai')) {
-      return [
-        "Natural language processing",
-        "Conversational AI interface", 
-        "Code generation & debugging",
-        "Multi-language support"
-      ];
-    } else if (toolName.includes('claude') || toolName.includes('anthropic')) {
-      return [
-        "Advanced reasoning capabilities",
-        "Long-form content analysis",
-        "Ethical AI framework",
-        "Constitutional AI approach"
-      ];
-    } else if (toolName.includes('zapier')) {
-      return [
-        "Workflow automation",
-        "1000+ app integrations",
-        "No-code solution",
-        "Real-time sync"
-      ];
-    } else if (toolName.includes('midjourney') || toolName.includes('dall')) {
-      return [
-        "Text-to-image generation",
-        "High-quality artwork",
-        "Style customization",
-        "Commercial licensing"
-      ];
-    } else if (toolName.includes('notion')) {
-      return [
-        "AI writing assistance",
-        "Smart templates",
-        "Knowledge management",
-        "Team collaboration"
-      ];
-    } else if (toolName.includes('figma')) {
-      return [
-        "AI design suggestions",
-        "Automated layouts", 
-        "Smart color palettes",
-        "Template creation"
-      ];
-    } else if (toolName.includes('hubspot') || toolName.includes('salesforce')) {
-      return [
-        "AI lead scoring",
-        "Predictive analytics",
-        "Sales forecasting",
-        "Customer insights"
-      ];
-    } else if (toolName.includes('slack') || toolName.includes('teams')) {
-      return [
-        "AI-powered search",
-        "Smart notifications",
-        "Meeting insights",
-        "Workflow integration"
-      ];
     }
     
-    // Generic fallback
     return [
-      "AI-powered automation",
+      "AI-powered capabilities",
       "Enhanced productivity",
       "Seamless integration",
       "Scalable solution"
     ];
+  };
+
+  const getToolPricing = (tool: ToolData): string => {
+    const enhancedInfo = enhancedTools.get(tool.name);
+    
+    // Use real-time pricing if available
+    if (enhancedInfo && enhancedInfo.pricing) {
+      return enhancedInfo.pricing;
+    }
+    
+    // Check if currently loading
+    if (loadingTools.has(tool.name)) {
+      return "Fetching current pricing...";
+    }
+    
+    // Fallback pricing while waiting for real data
+    const toolName = tool.name.toLowerCase();
+    
+    if (toolName.includes('scikit') || toolName.includes('sklearn')) {
+      return "Free (Open Source)";
+    } else if (toolName.includes('tensorflow') || toolName.includes('pytorch')) {
+      return "Free (Open Source)";
+    } else if (toolName.includes('jupyter')) {
+      return "Free (Open Source)";
+    } else if (toolName.includes('datarobot')) {
+      return "Enterprise pricing";
+    } else if (toolName.includes('tableau')) {
+      return "$70/user/month";
+    } else if (toolName.includes('power bi')) {
+      return "$10/user/month";
+    } else if (toolName.includes('h2o')) {
+      return "Free tier available";
+    }
+    
+    return "Contact vendor";
   };
 
   return (
@@ -584,24 +512,44 @@ const ResultsPage = () => {
                             </div>
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-bold text-black text-lg">
-                              {tool.name}
-                            </h4>
-                            <div className="flex items-center gap-1 text-sm text-gray-600">
-                              <DollarSign className="w-3 h-3" />
-                              {getToolPricing(tool.name)}
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-bold text-black text-lg">
+                                {tool.name}
+                              </h4>
+                              {loadingTools.has(tool.name) && (
+                                <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                              )}
                             </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
+                              <DollarSign className="w-3 h-3" />
+                              {getToolPricing(tool)}
+                            </div>
+                            {enhancedTools.get(tool.name)?.category && (
+                              <div className="text-xs text-blue-600 font-medium">
+                                {enhancedTools.get(tool.name)?.category}
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         <div className="space-y-2">
                           {getToolFeatures(tool).map((feature, featureIndex) => (
                             <div key={featureIndex} className="flex items-center gap-2 text-sm text-gray-700">
-                              <CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
+                              {loadingTools.has(tool.name) ? (
+                                <Loader2 className="w-3 h-3 animate-spin text-blue-500 flex-shrink-0" />
+                              ) : (
+                                <CheckCircle className="w-3 h-3 text-green-600 flex-shrink-0" />
+                              )}
                               <span>{feature.trim()}</span>
                             </div>
                           ))}
                         </div>
+
+                        {enhancedTools.get(tool.name)?.effectiveness && (
+                          <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-800">
+                            <strong>Effectiveness:</strong> {enhancedTools.get(tool.name)?.effectiveness}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
