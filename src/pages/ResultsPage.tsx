@@ -97,9 +97,24 @@ const ResultsPage = () => {
 
   const getToolFeatures = (tool: ToolData) => {
     if (tool.comparisonPoints) {
-      return tool.comparisonPoints.split('•').filter(point => point.trim()).slice(0, 3);
+      // Split by bullet points and newlines, clean up, and limit to fit in box
+      const features = tool.comparisonPoints
+        .split(/[•\n]/)
+        .map(point => point.trim())
+        .filter(point => point && point.length > 0)
+        .slice(0, 3); // Limit to 3 features to fit in box
+      
+      return features.length > 0 ? features : ["No features available"];
     }
-    return ["Feature 1", "Feature 2", "Feature 3"];
+    
+    // Fallback to description if comparisonPoints is not available
+    if (tool.description) {
+      // Try to extract key features from description
+      const sentences = tool.description.split(/[.!?]/).filter(s => s.trim().length > 10);
+      return sentences.slice(0, 3).map(s => s.trim());
+    }
+    
+    return ["No features available"];
   };
 
   return (
