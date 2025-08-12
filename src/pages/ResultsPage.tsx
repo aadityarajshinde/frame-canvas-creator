@@ -15,7 +15,13 @@ import {
   Users,
   BarChart3,
   Code,
-  MessageSquare
+  MessageSquare,
+  Target,
+  TrendingUp,
+  Star,
+  Lightbulb,
+  Settings,
+  ArrowRight
 } from "lucide-react";
 
 interface ToolData {
@@ -51,12 +57,28 @@ const ResultsPage = () => {
     return null;
   }
 
-  const formatText = (text: string) => {
-    return text.split('\n').map((line, index) => (
-      <div key={index} className="mb-1">
-        {line}
-      </div>
-    ));
+  const formatTextWithIcons = (text: string, sectionType: string) => {
+    const icons = {
+      business: [Target, TrendingUp, Star, Lightbulb, Settings, ArrowRight],
+      landscape: [Globe, BarChart3, Users, Code, Zap, MessageSquare],
+      ai: [Brain, Cog, Star, Lightbulb, Target, TrendingUp],
+      solution: [Settings, Code, Zap, MessageSquare, Brain, Cog]
+    };
+    
+    const sectionIcons = icons[sectionType as keyof typeof icons] || icons.business;
+    
+    return text.split('\n').map((line, index) => {
+      if (line.trim()) {
+        const IconComponent = sectionIcons[index % sectionIcons.length];
+        return (
+          <div key={index} className="flex items-start gap-2 mb-2">
+            <IconComponent className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#00ff41' }} />
+            <span>{line}</span>
+          </div>
+        );
+      }
+      return <div key={index} className="mb-1" />;
+    });
   };
 
   const getToolIcon = (toolName: string) => {
@@ -143,7 +165,7 @@ const ResultsPage = () => {
                 </CardHeader>
                 <CardContent className="pt-0 h-full overflow-auto">
                   <div className="text-white text-sm leading-relaxed">
-                    {formatText(formData.businessFundamentals)}
+                    {formatTextWithIcons(formData.businessFundamentals, 'business')}
                   </div>
                 </CardContent>
               </Card>
@@ -175,7 +197,7 @@ const ResultsPage = () => {
                 </CardHeader>
                 <CardContent className="pt-0 h-full overflow-auto">
                   <div className="text-white text-sm leading-relaxed">
-                    {formatText(formData.currentSolutionLandscape)}
+                    {formatTextWithIcons(formData.currentSolutionLandscape, 'landscape')}
                   </div>
                 </CardContent>
               </Card>
@@ -207,7 +229,7 @@ const ResultsPage = () => {
                 </CardHeader>
                 <CardContent className="pt-0 h-full overflow-auto">
                   <div className="text-white text-sm leading-relaxed">
-                    {formatText(formData.aiFundamentals)}
+                    {formatTextWithIcons(formData.aiFundamentals, 'ai')}
                   </div>
                 </CardContent>
               </Card>
@@ -239,7 +261,7 @@ const ResultsPage = () => {
                 </CardHeader>
                 <CardContent className="pt-0 h-full overflow-auto">
                   <div className="text-white text-sm leading-relaxed">
-                    {formatText(formData.aiSolutionAndTools)}
+                    {formatTextWithIcons(formData.aiSolutionAndTools, 'solution')}
                   </div>
                 </CardContent>
               </Card>
