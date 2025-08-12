@@ -61,76 +61,52 @@ const FormPage = () => {
       description: `Fetching information for ${toolName}...`,
     });
     
+    // Smart defaults based on common tool names
     const toolLower = toolName.toLowerCase();
-    let description = "";
-    let features = "";
+    let description = `${toolName} is an AI-powered tool designed to enhance productivity and automation capabilities.`;
+    let features = `• Advanced AI features\n• User-friendly interface\n• Scalable solution\n• Integration capabilities`;
     let logoUrl = `https://logo.clearbit.com/${toolName.toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com`;
     
-    // Tool-specific information based on actual tool capabilities
-    if (toolLower.includes('scikit') || toolLower.includes('sklearn')) {
-      description = "Scikit-learn is a comprehensive machine learning library for Python, providing simple and efficient tools for data mining and analysis.";
-      features = "• Supervised learning algorithms (SVM, Random Forest, etc.)\n• Unsupervised learning (clustering, dimensionality reduction)\n• Model selection and evaluation tools\n• Data preprocessing utilities\n• Cross-validation and hyperparameter tuning\n• Feature selection and extraction";
-      logoUrl = 'https://scikit-learn.org/stable/_static/scikit-learn-logo-small.png';
-    } else if (toolLower.includes('datarobot')) {
-      description = "DataRobot is an automated machine learning platform that accelerates and democratizes data science across organizations.";
-      features = "• Automated machine learning model building\n• Feature engineering and selection\n• Model deployment and monitoring\n• Explainable AI and model interpretability\n• Time series forecasting\n• MLOps and model governance";
-      logoUrl = 'https://www.datarobot.com/wp-content/uploads/2021/08/DataRobot-Symbol-Blue.svg';
-    } else if (toolLower.includes('h2o')) {
-      description = "H2O.ai provides open-source machine learning and AI platforms for enterprises to build and deploy intelligent applications.";
-      features = "• Distributed machine learning algorithms\n• AutoML for automated model building\n• Explainable AI (XAI) capabilities\n• Real-time model scoring\n• Integration with popular data science tools\n• Scalable big data processing";
-      logoUrl = 'https://h2o.ai/content/themes/h2o2016/assets/images/h2o_logo.svg';
-    } else if (toolLower.includes('tensorflow')) {
-      description = "TensorFlow is an open-source machine learning framework developed by Google for building and deploying ML models.";
-      features = "• Deep learning and neural network support\n• Production-ready ML deployment\n• Cross-platform compatibility\n• Extensive ecosystem and community\n• TensorBoard for visualization\n• Mobile and edge device optimization";
-      logoUrl = 'https://www.tensorflow.org/images/tf_logo_social.png';
-    } else if (toolLower.includes('pytorch')) {
-      description = "PyTorch is a machine learning library based on the Torch library, primarily developed by Facebook's AI Research lab.";
-      features = "• Dynamic neural network graphs\n• Pythonic and intuitive interface\n• Strong GPU acceleration support\n• Research-friendly architecture\n• Production deployment via TorchScript\n• Extensive pre-trained model zoo";
-      logoUrl = 'https://pytorch.org/assets/images/pytorch-logo.png';
-    } else if (toolLower.includes('azure') && toolLower.includes('ml')) {
-      description = "Azure Machine Learning is a cloud-based environment for training, deploying, and managing machine learning models.";
-      features = "• Drag-and-drop ML model building\n• Automated machine learning capabilities\n• MLOps and model lifecycle management\n• Jupyter notebook integration\n• Real-time inferencing\n• Enterprise security and compliance";
-      logoUrl = 'https://azure.microsoft.com/svghandler/machine-learning/?width=600&height=315';
-    } else if (toolLower.includes('aws') && (toolLower.includes('sagemaker') || toolLower.includes('machine'))) {
-      description = "Amazon SageMaker is a fully managed service that provides tools to build, train, and deploy machine learning models.";
-      features = "• Built-in algorithms and frameworks\n• One-click model training and tuning\n• Easy model deployment and scaling\n• Jupyter notebook instances\n• Data labeling and preparation tools\n• Model monitoring and debugging";
-      logoUrl = 'https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2018/10/24/sagemaker-1.gif';
-    } else if (toolLower.includes('tableau')) {
-      description = "Tableau is a visual analytics platform transforming the way people use data to solve problems.";
-      features = "• Interactive data visualization\n• Self-service analytics capabilities\n• Real-time data connectivity\n• Advanced statistical analysis\n• Mobile-optimized dashboards\n• Enterprise data governance";
-      logoUrl = 'https://logos-world.net/wp-content/uploads/2021/10/Tableau-Symbol.png';
-    } else if (toolLower.includes('power bi') || toolLower.includes('powerbi')) {
-      description = "Microsoft Power BI is a business analytics tool that provides interactive visualizations and business intelligence capabilities.";
-      features = "• Self-service business intelligence\n• Real-time dashboard monitoring\n• Natural language query processing\n• Office 365 integration\n• On-premises and cloud connectivity\n• Advanced data modeling capabilities";
-      logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg';
-    } else if (toolLower.includes('jupyter')) {
-      description = "Jupyter Notebook is an open-source web application for creating and sharing documents with live code, equations, and visualizations.";
-      features = "• Interactive computing environment\n• Support for 40+ programming languages\n• Rich output display (HTML, images, videos)\n• Big data integration capabilities\n• Collaborative sharing features\n• Extensible through magic commands";
-      logoUrl = 'https://jupyter.org/assets/logos/rectanglelogo-greytext-orangebody-greymoons.svg';
-    } else if (toolLower.includes('anaconda')) {
-      description = "Anaconda is a distribution of Python and R for scientific computing and data science with package management capabilities.";
-      features = "• 1,500+ open-source packages included\n• Conda package manager\n• Jupyter notebook integration\n• Cross-platform compatibility\n• Virtual environment management\n• Enterprise security and governance";
-      logoUrl = 'https://www.anaconda.com/wp-content/uploads/2022/12/anaconda_secondary_logo.svg';
-    } else if (toolLower.includes('python')) {
-      description = "Python is a high-level programming language widely used for data science, machine learning, and AI development.";
-      features = "• Extensive ML/AI library ecosystem\n• Simple and readable syntax\n• Cross-platform compatibility\n• Large community support\n• Integration with big data tools\n• Rapid prototyping capabilities";
-      logoUrl = 'https://www.python.org/static/community_logos/python-logo-master-v3-TM.png';
-    } else if (toolLower.includes('r ') || toolLower.includes('rstudio')) {
-      description = "R is a programming language and environment specifically designed for statistical computing and graphics.";
-      features = "• Advanced statistical analysis\n• Comprehensive data visualization\n• Extensive package ecosystem (CRAN)\n• Reproducible research capabilities\n• Time series analysis tools\n• Bioinformatics and econometrics support";
-      logoUrl = 'https://www.r-project.org/Rlogo.svg';
-    } else if (toolLower.includes('spark')) {
-      description = "Apache Spark is a unified analytics engine for large-scale data processing with built-in modules for streaming, SQL, and ML.";
-      features = "• Distributed computing framework\n• In-memory data processing\n• MLlib machine learning library\n• Streaming data processing\n• SQL analytics capabilities\n• Multi-language support (Scala, Python, R)";
-      logoUrl = 'https://spark.apache.org/images/spark-logo-trademark.png';
-    } else if (toolLower.includes('hadoop')) {
-      description = "Apache Hadoop is a framework for distributed storage and processing of large datasets across clusters of computers.";
-      features = "• Distributed file system (HDFS)\n• MapReduce processing model\n• Fault tolerance and reliability\n• Scalable architecture\n• Cost-effective big data storage\n• Integration with ML frameworks";
-      logoUrl = 'https://hadoop.apache.org/elephant.png';
-    } else {
-      // Generic fallback with more specific formatting
-      description = `${toolName} is an AI-powered platform designed to enhance data science and machine learning workflows.`;
-      features = `• Advanced analytics capabilities\n• Data processing and transformation\n• Machine learning model development\n• Visualization and reporting tools\n• Integration with existing systems\n• Scalable cloud-based architecture`;
+    // Enhanced smart defaults based on tool name patterns
+    if (toolLower.includes('gpt') || toolLower.includes('chat') || toolLower.includes('openai')) {
+      description = `${toolName} is a conversational AI platform that provides intelligent text generation and natural language understanding capabilities.`;
+      features = `• Natural language processing\n• Conversational interface\n• Content generation\n• Multi-language support\n• Code assistance\n• Creative writing`;
+    } else if (toolLower.includes('zapier') || toolLower.includes('automation') || toolLower.includes('n8n')) {
+      description = `${toolName} is an automation platform that connects different applications and streamlines workflows without requiring technical expertise.`;
+      features = `• Workflow automation\n• App integrations (1000+ apps)\n• Trigger-based actions\n• No-code solution\n• Real-time sync\n• Custom logic support`;
+    } else if (toolLower.includes('claude') || toolLower.includes('anthropic')) {
+      description = `${toolName} is an AI assistant focused on being helpful, harmless, and honest in conversations and complex reasoning tasks.`;
+      features = `• Advanced reasoning capabilities\n• Long-form content analysis\n• Ethical AI framework\n• Multi-modal understanding\n• Document analysis\n• Constitutional AI approach`;
+    } else if (toolLower.includes('midjourney') || toolLower.includes('dall') || toolLower.includes('stable')) {
+      description = `${toolName} is an AI image generation tool that creates high-quality artwork and images from text descriptions.`;
+      features = `• Text-to-image generation\n• Style customization\n• High-resolution output\n• Artistic controls\n• Batch processing\n• Commercial licensing`;
+    } else if (toolLower.includes('notion') || toolLower.includes('obsidian')) {
+      description = `${toolName} is a productivity and knowledge management platform enhanced with AI capabilities for better organization and automation.`;
+      features = `• AI-powered writing assistance\n• Smart templates\n• Automated organization\n• Knowledge graphs\n• Team collaboration\n• Custom databases`;
+    } else if (toolLower.includes('figma') || toolLower.includes('canva')) {
+      description = `${toolName} is a design platform that incorporates AI features to streamline creative workflows and enhance design productivity.`;
+      features = `• AI design suggestions\n• Automated layouts\n• Smart color palettes\n• Content generation\n• Template creation\n• Brand consistency`;
+    } else if (toolLower.includes('hubspot') || toolLower.includes('salesforce')) {
+      description = `${toolName} is a CRM and marketing platform enhanced with AI capabilities for better customer relationship management and sales automation.`;
+      features = `• AI lead scoring\n• Predictive analytics\n• Automated workflows\n• Smart recommendations\n• Customer insights\n• Sales forecasting`;
+    } else if (toolLower.includes('slack') || toolLower.includes('teams') || toolLower.includes('discord')) {
+      description = `${toolName} is a communication platform enhanced with AI features for improved team collaboration and productivity.`;
+      features = `• AI-powered search\n• Smart notifications\n• Automated summaries\n• Language translation\n• Meeting insights\n• Workflow integration`;
+    }
+    
+    // Try to get a better logo URL based on known services
+    if (toolLower.includes('openai') || toolLower.includes('gpt')) {
+      logoUrl = 'https://openai.com/favicon.ico';
+    } else if (toolLower.includes('anthropic') || toolLower.includes('claude')) {
+      logoUrl = 'https://www.anthropic.com/favicon.ico';
+    } else if (toolLower.includes('zapier')) {
+      logoUrl = 'https://zapier.com/favicon.ico';
+    } else if (toolLower.includes('notion')) {
+      logoUrl = 'https://www.notion.so/favicon.ico';
+    } else if (toolLower.includes('figma')) {
+      logoUrl = 'https://www.figma.com/favicon.ico';
+    } else if (toolLower.includes('slack')) {
+      logoUrl = 'https://slack.com/favicon.ico';
     }
     
     // Update form values
@@ -140,7 +116,7 @@ const FormPage = () => {
     
     toast({
       title: "Tool Info Generated",
-      description: `Detailed information for ${toolName} has been populated.`,
+      description: `Smart information for ${toolName} has been populated. You can edit it if needed.`,
     });
   };
 
